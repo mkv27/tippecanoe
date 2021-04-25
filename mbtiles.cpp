@@ -74,24 +74,11 @@ sqlite3 *mbtiles_open(char *dbname, char **argv, int forcetable) {
 }
 
 void mbtiles_write_tile(sqlite3 *outdb, int z, int tx, int ty, const char *data, int size) {
-	sqlite3_stmt *stmt;
-	const char *query = "insert into tiles (zoom_level, tile_column, tile_row, tile_data) values (?, ?, ?, ?)";
-	if (sqlite3_prepare_v2(outdb, query, -1, &stmt, NULL) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3 insert prep failed\n");
-		exit(EXIT_FAILURE);
-	}
-
-	sqlite3_bind_int(stmt, 1, z);
-	sqlite3_bind_int(stmt, 2, tx);
-	sqlite3_bind_int(stmt, 3, (1 << z) - 1 - ty);
-	sqlite3_bind_blob(stmt, 4, data, size, NULL);
-
-	if (sqlite3_step(stmt) != SQLITE_DONE) {
-		fprintf(stderr, "sqlite3 insert failed: %s\n", sqlite3_errmsg(outdb));
-	}
-	if (sqlite3_finalize(stmt) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3 finalize failed: %s\n", sqlite3_errmsg(outdb));
-	}
+	printf("%d %d %d ", z, tx, ty);
+        for (int i = 0; i < size; i++) {
+                printf("%02x", (unsigned char) data[i]);
+        }
+        printf("\n");
 }
 
 bool type_and_string::operator<(const type_and_string &o) const {
